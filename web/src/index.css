@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+    'Droid Sans', 'Helvetica Neue', 'Oswald', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100vh;
+  background: none !important;
+  overflow: hidden !important;
+  user-select: none;
+}
+
+#root {
+  height: 100%;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translate(100%, -50%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideOut {
+  100% {
+    transform: translate(100%, -50%);
+    opacity: 0;
+  }
+}
+
+.slideIn {
+  animation: slideIn 250ms forwards;
+}
+
+input {
+  background: radial-gradient(#52525bfa, #3f3f46a0);
+  outline: none;
+  padding: 5px 10px;
+  color: white;
+  font-size: 13px;
+  border-radius: 4px;
+}

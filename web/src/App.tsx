@@ -7,15 +7,16 @@ import type { ActiveCategory, OpenData } from "./typings/main";
 import Categories from "./components/Categories";
 import VehicleCard from "./components/VehicleCard";
 import { Vehicles } from "./components/utils";
+import VehicleDetails from "./components/VehicleDetails";
 
 debugData<OpenData>([
   {
     action: 'openGarage',
     data: {
       vehicles: [
-        { type: 'personal', plate: '8GS744TD', fuelLevel: 65, status: 'stored', model: 2139203625 },
-        { type: 'shared', plate: '7421SADG', fuelLevel: 32, status: 'outside', model: 'kuruma' },
-        { type: 'personal', plate: '84ASD310', fuelLevel: 12, status: 'stored', model: 'urus' }
+        { type: 'personal', plate: '8GS744TD', status: 'stored', model: 2139203625, data: { engine: 100, body: 72, fuelLevel: 32 } },
+        { type: 'shared', plate: '7421SADG', status: 'outside', model: 'kuruma', data: { engine: 38, body: 12, fuelLevel: 96 } },
+        { type: 'personal', plate: '84ASD310', status: 'stored', model: 'urus', data: { engine: 79, body: 52, fuelLevel: 64 } }
       ]
     }
   }
@@ -27,6 +28,7 @@ const App: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<ActiveCategory>('all');
   const [filtered, setFiltered] = useState<CleanVehicle[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedVehicle, setSelectedVehicle] = useState<CleanVehicle | null>(null);
 
   useNuiEvent('openGarage', (data: OpenData) => {
     let vehicles: Vehicle[] = data.vehicles.map((veh: Vehicle) => {
@@ -80,15 +82,31 @@ const App: React.FC = () => {
     return () => window.removeEventListener('keydown', keyHandler);
   }, [visible]);
 
+  function showVehicleDetails(vehicle: CleanVehicle) {
+    if (selectedVehicle) {
+      const wrapper = document.querySelector('.slideIn-left') as HTMLElement;
+      wrapper!.style.animation = 'slideOutLeft 250ms forwards';
+
+      setTimeout(() => {
+        setSelectedVehicle(selectedVehicle.plate === vehicle.plate ? null : vehicle);
+      }, 250);
+
+      return;
+    }
+
+    setSelectedVehicle(vehicle);
+  }
+
   return ( visible &&
     <div className="absolute top-1/2 left-[84%] -translate-x-1/2 -translate-y-1/2 w-[550px] box-bg rounded-3xl p-7 slideIn">
       <Header vehicles={vehicles} />
       <Categories activeCategory={activeCategory} setActiveCategory={(cat: ActiveCategory) => setActiveCategory(cat)} setSearchQuery={setSearchQuery} />
       <div className="border h-[500px] mt-3 border-gray-600 mx-3 grid grid-cols-2 gap-5 py-3 px-6 overflow-auto">
           {filtered.map((vehicle, index) => (
-            <VehicleCard key={`vehicle-card-${index}`} vehicle={vehicle}/>
+            <VehicleCard key={`vehicle-card-${index}`} vehicle={vehicle} setSelectedVehicle={(vehicle: CleanVehicle) => showVehicleDetails(vehicle)}/>
           ))}
       </div>
+      {selectedVehicle && <VehicleDetails key={selectedVehicle.plate} vehicle={selectedVehicle} close={() => showVehicleDetails(selectedVehicle)} handleClose={() => handleClose()} />}
     </div>
   )
 };

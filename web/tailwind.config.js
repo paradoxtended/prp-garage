@@ -19,6 +19,9 @@ module.exports = {
         },
         '.bg-vehicle-card-hover': {
           background: 'radial-gradient(#07deb3a0, #0bd9b040)'
+        },
+        '.details-card-bg': {
+          background: 'radial-gradient(#4b5563c0, #37415150)'
         }
       })
     }

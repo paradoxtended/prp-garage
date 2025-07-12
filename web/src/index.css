@@ -40,8 +40,26 @@ body {
   }
 }
 
+@keyframes slideInLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideOutLeft {
+  100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
 .slideIn {
   animation: slideIn 250ms forwards;
+}
+
+.slideIn-left {
+  animation: slideInLeft 250ms forwards;
 }
 
 input {

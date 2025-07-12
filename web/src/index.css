@@ -52,3 +52,15 @@ input {
   font-size: 13px;
   border-radius: 4px;
 }
+
+::-webkit-scrollbar {
+  width: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #c5c5c5;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #646464;
+}

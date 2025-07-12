@@ -13,6 +13,12 @@ module.exports = {
         '.glowing-text': {
           color: '#0bd9b0',
           filter: 'drop-shadow(0 0 20px #0bd9b0)'
+        },
+        '.bg-vehicle-card': {
+          background: 'radial-gradient(#6b7280fa, #4b556350)'
+        },
+        '.bg-vehicle-card-hover': {
+          background: 'radial-gradient(#07deb3a0, #0bd9b040)'
         }
       })
     }

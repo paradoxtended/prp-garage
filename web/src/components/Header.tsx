@@ -16,7 +16,7 @@ const Header: React.FC<{
                     <p className="font-medium text-[17px]">Cars</p>
                 </div>
                 <div className="w-2 h-2 bg-[#0bd9b0] shadow-[0_0_15px_#0bd9b0]"></div>
-                <p className="text-white font-semibold leading-3">{vehicles.filter(veh => veh.stored).length}<span className="text-gray-400 font-normal text-[13px]">/{vehicles.length}</span></p>
+                <p className="text-white font-semibold leading-3">{vehicles.filter(veh => veh.status === 'stored').length}<span className="text-gray-400 font-normal text-[13px]">/{vehicles.length}</span></p>
             </div>
             <div className="flex items-center bg-gray-700 rounded-sm text-sm text-gray-400 p-0.5">
                 <p className="bg-gray-800 px-2">Exit</p>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { CleanVehicle } from "../typings/vehicle";
+import { Vehicles } from "./utils";
 
 const fallbackImage = './car-icon.webp';
 
@@ -38,7 +39,7 @@ const VehicleCard: React.FC<{
             />
             <div className="w-full h-[50px] bg-gray-800/50 absolute bottom-0 px-5 flex items-center justify-between">
                 <div className="flex flex-col leading-4">
-                    <p className="text-white font-medium text-sm">{vehicle.model.charAt(0).toUpperCase() + vehicle.model.slice(1)}</p>
+                    <p className="text-white font-medium text-sm leading-[14px]">{Vehicles.find((veh: any) => veh.Name === vehicle.model || veh.Hash === vehicle.model)?.DisplayName.English || vehicle.model.charAt(0).toUpperCase() + vehicle.model.slice(1)}</p>
                     <p className="text-[13px] glowing-text">{vehicle.status.charAt(0).toUpperCase() + vehicle.status.slice(1)}</p>
                 </div>
                 <div className="flex items-center text-[13px] text-white h-5">

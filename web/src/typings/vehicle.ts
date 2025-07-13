@@ -6,6 +6,7 @@ export interface Vehicle {
     status: 'stored' | 'impound' | 'outside';
     model: string | number;
     owner?: boolean;
+    displayName?: string;
     data: {
         fuelLevel: number;
         engine: number;

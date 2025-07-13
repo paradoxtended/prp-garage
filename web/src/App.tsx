@@ -16,7 +16,7 @@ debugData<OpenData>([
     data: {
       vehicles: [
         { type: 'personal', plate: '8GS744TD', status: 'stored', model: 2139203625, data: { engine: 100, body: 72, fuelLevel: 32 }, owner: true },
-        { type: 'shared', plate: '7421SADG', status: 'outside', model: 'kuruma', data: { engine: 38, body: 12, fuelLevel: 96 }, owner: false },
+        { type: 'shared', plate: '7421SADG', status: 'outside', model: 3061199846, data: { engine: 38, body: 12, fuelLevel: 96 }, owner: false },
         { type: 'personal', plate: '84ASD310', status: 'impound', model: 'urus', data: { engine: 79, body: 52, fuelLevel: 64 }, owner: true }
       ]
     }
@@ -39,9 +39,12 @@ const App: React.FC = () => {
         model = Vehicles.find((raw: any) => raw.Hash === model)?.Name || 'unknown';
       }
 
+      let displayName = Vehicles.find((raw: any) => raw.Hash === model || raw.Name === model)?.DisplayName.English;
+
       return {
         ...veh,
         model: model,
+        displayName: displayName
       };
     });
 
@@ -65,7 +68,8 @@ const App: React.FC = () => {
 
     const filteredBySearch = filteredByCategory.filter(veh =>
       veh.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      veh.plate.toLowerCase().includes(searchQuery.toLowerCase())
+      veh.plate.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      veh.displayName?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     setFiltered(filteredBySearch);

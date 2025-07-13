@@ -58,7 +58,9 @@ const VehicleDetails: React.FC<{
                                 <p className="text-sm glowing-text font-medium lea">Transfer To Player</p>
                                 <p className="text-xs text-gray-400">Transfer vehicle to player</p>
                             </div>
-                            <i className={`fa-solid fa-chevron-down ${accordionOpen && '-rotate-180'} scale-75 glowing-text bg-[#0bd9b025] w-6 h-6 flex items-center justify-center rounded transition-all`}></i>
+                            <div className="glowing-text bg-[#0bd9b025] w-5 h-5 flex items-center justify-center">
+                                <i className={`fa-solid fa-chevron-down ${accordionOpen && '-rotate-180'} scale-75 transition-all`}></i>
+                            </div>
                         </div>
                         <AccordionSection open={accordionOpen}>
                             <input

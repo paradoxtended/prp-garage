@@ -8,6 +8,7 @@ import Categories from "./components/Categories";
 import VehicleCard from "./components/VehicleCard";
 import { Vehicles } from "./components/utils";
 import VehicleDetails from "./components/VehicleDetails";
+import { fetchNui } from "./utils/fetchNui";
 
 debugData<OpenData>([
   {
@@ -52,6 +53,7 @@ const App: React.FC = () => {
     const container = document.querySelector('.slideIn') as HTMLElement;
     container!.style.animation = 'slideOut 250ms forwards';
     setTimeout(() => setVisible(false), 250);
+    fetchNui('closeGarage');
   };
 
   useEffect(() => {

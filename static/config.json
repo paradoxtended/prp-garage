@@ -1,0 +1,17 @@
+{
+    "blips": {
+        "garage": {
+            "sprite": 357,
+            "color": 11,
+            "scale": 0.75,
+            "name": "Garage"
+        }
+    },
+    "garages": [
+        {
+            "visible": true,
+            "coords": { "x": -754.8779, "y": -1078.0959, "z": 11.7901 },
+            "spawnCoords": { "x": -754.3748, "y": -1079.0162, "z": 11.7688, "w": 29.5473 }
+        }
+    ]
+}

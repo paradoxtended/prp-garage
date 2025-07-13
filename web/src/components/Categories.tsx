@@ -26,7 +26,7 @@ const Categories: React.FC<{
     return (
         <div className="mt-3 flex items-center gap-3">
             <div className="relative w-full">
-                <input type="text" className="pl-8 placeholder:text-zinc-400 w-full" placeholder="Search automobile..." onChange={(e) => setSearchQuery(e.target.value)}/>
+                <input type="text" className="pl-8 placeholder:text-zinc-400 w-full text-xs" placeholder="Search automobile..." onChange={(e) => setSearchQuery(e.target.value)}/>
                 <i className="fa-solid fa-magnifying-glass glowing-text absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none"></i>
             </div>
             <div className="relative flex items-center h-full w-fit text-xs text-gray-400 font-light border-b border-gray-600" ref={containerRef}>

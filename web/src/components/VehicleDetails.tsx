@@ -7,7 +7,7 @@ const VehicleDetails: React.FC<{
     handleClose: () => void;
 }> = ({ vehicle, close, handleClose }) => {
     function takeOutVehicle() {
-        fetchNui('takeOutVehicle', vehicle.plate)
+        fetchNui('takeOutVehicle', vehicle)
         close();
         handleClose();
     }

@@ -32,6 +32,16 @@ local function fuelVehicle(vehicle, fuelLevel)
     end
 end
 
+---@param vehicle integer
+local function getVehicleFuel(vehicle)
+    if GetResourceState('LegacyFuel') == 'started' then
+        local fuelLevel = exports['LegacyFuel']:GetFuel(vehicle, fuelLevel)
+        return math.floor(fuelLevel * 100) / 100
+    else
+        return GetVehicleFuelLevel(vehicle)
+    end
+end
+
 RegisterNetEvent('prp-garage:setVehicleProperties', function(netId, props)
     local timeout = 10000
 
@@ -63,7 +73,33 @@ local garage = {}
 function garage.saveVehicle()
     local vehicle = cache.vehicle
 
-    
+    if not vehicle and cache.seat ~= -1 then
+        return prp.notify({
+            description = locale('not_driver'),
+            type = 'error'
+        })
+    end
+
+    local props = lib.getVehicleProperties(vehicle)
+
+    if not props then return end
+
+    props.plate = props.plate:strtrim(' ')
+    props.fuelLevel = getVehicleFuel(vehicle)
+    local netId = NetworkGetNetworkIdFromEntity(vehicle)
+    local result = lib.callback.await('prp-garage:saveVehicle', false, props, netId)
+
+    if result then
+        if cache.vehicle then
+            TaskLeaveAnyVehicle(cache.ped, 0, 0)
+            Wait(1000)
+        end
+    else
+        prp.notify({
+            description = locale('not_your_vehicle'),
+            type = 'error'
+        })
+    end
 end
 
 ---@param cb? fun(data: any)
@@ -107,6 +143,7 @@ function garage.getVehicles()
             plate = vehicle.plate,
             status = status,
             model = props.model,
+            owner = vehicle[Framework.name == 'es_extended' and 'owner' or 'citizenid'] == Framework.getIdentifier(),
             data = {
                 engine = props.engineHealth / 10,
                 body = props.bodyHealth / 10,

@@ -1,5 +1,14 @@
 {
     "parking": "PARKING",
+    "impound": "IMPOUND",
     "save_vehicle": "PARK VEHICLE",
-    "vehicle_marked": "Vehicle is not in garage. It has been marked on your GPS."
+    "vehicle_marked": "Vehicle is not in garage. It has been marked on your GPS.",
+    "not_driver": "You are not the driver.",
+    "not_your_vehicle": "This is not your vehicle.",
+    "impounded": "The vehicle is impounded.",
+    "not_enough_money": "Not enough money, you need $%s.",
+    "vehicle_transfered": "Vehicle has been transfered successfully.",
+    "player_not_offline": "Player is not online.",
+    "player_far_away": "Player is far away from you.",
+    "vehicle_is_shared": "Vehicle is in society."
 }

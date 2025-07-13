@@ -27,7 +27,12 @@ lib.callback.register('prp-garage:getOwnedVehicles', function(source)
 
     local identifier = player:getIdentifier()
 
-    return db.getOwnedVehicles(identifier)
+    local data = lib.callback.await('prp-garage:getGarage', source)
+    local type = data.garage and Config.garages[data.index].type or nil
+
+    if not type then return end
+
+    return db.getOwnedVehicles(identifier, player:getJob(), type)
 end)
 
 ---@param source number
@@ -37,7 +42,7 @@ lib.callback.register('prp-garage:takeOutVehicle', function(source, plate, type)
     local player = Framework.getPlayerFromId(source)
     if not player then return end
 
-    local vehicle = db.getVehicle(plate)
+    local vehicle = db.getVehicle(plate, player:getIdentifier(), player:getJob())
     if not vehicle then return end
 
     if vehicle.stored == 0 then
@@ -46,10 +51,38 @@ lib.callback.register('prp-garage:takeOutVehicle', function(source, plate, type)
         return
     end
 
+    local data = lib.callback.await('prp-garage:getGarage', source)
+
+    -- Impound logic
+    if data.impound then
+        local price = Config.impound.price
+
+        if player:getAccountMoney(Config.impound.account) < price then
+            TriggerClientEvent('prp-garage:notify', source, {
+                description = locale('not_enough_' .. Config.impound.account, price),
+                type = 'error'
+            })
+
+            return
+        end
+
+        player:removeAccountMoney(Config.impound.account, price)
+        db.updateVehicle(plate, 1, true)
+
+        return
+    end
+
+    if vehicle.stored == 2 then
+        TriggerClientEvent('prp-garage:notify', source, {
+            description = locale('impounded'),
+            type = 'error'
+        })
+        return
+    end
+
     db.updateVehicle(plate, 0, true)
 
-    local garageIndex = lib.callback.await('prp-garage:getGarage', source)
-    local coords = Config.garages[garageIndex].spawnCoords
+    local coords = Config.garages[data.index].spawnCoords
     local props = json.decode(vehicle.mods or vehicle.vehicle)
     local entity = createVehicle(props.model, coords, type)
 
@@ -64,4 +97,39 @@ lib.callback.register('prp-garage:takeOutVehicle', function(source, plate, type)
     activeVehicles[plate] = entity
 
     return netId
+end)
+
+---@param source number
+---@param props any
+---@param netId integer
+lib.callback.register('prp-garage:saveVehicle', function(source, props, netId)
+    local player = Framework.getPlayerFromId(source)
+    if not player then return end
+
+    local vehicle = db.getVehicle(props.plate, player:getIdentifier(), player:getJob())
+
+    if not vehicle then
+        return false
+    end
+
+    local oldProps = json.decode(vehicle.mods or vehicle.vehicle)
+
+    if props.model ~= oldProps.model then
+        return false
+    end
+
+    db.updateVehicle(props.plate, 1, true)
+    db.updateVehicle(props.plate, json.encode(props))
+
+    SetTimeout(500, function()
+        local vehicle = NetworkGetEntityFromNetworkId(netId)
+
+        if DoesEntityExist(vehicle) then
+            DeleteEntity(vehicle)
+        end
+    end)
+
+    activeVehicles[props.plate] = nil
+
+    return true
 end)

@@ -43,7 +43,7 @@ const VehicleCard: React.FC<{
                 </div>
                 <div className="flex items-center text-[13px] text-white h-5">
                     <p className="w-5 h-full bg-yellow-500 flex items-center justify-center">F</p>
-                    <p className="bg-gray-900/50 h-full px-2">{vehicle.data.fuelLevel}</p>
+                    <p className="bg-gray-900/50 h-full px-2">{vehicle.data.fuelLevel.toFixed(1)}</p>
                 </div>
             </div>
         </div>

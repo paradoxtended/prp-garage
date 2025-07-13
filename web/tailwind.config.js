@@ -14,6 +14,9 @@ module.exports = {
           color: '#0bd9b0',
           filter: 'drop-shadow(0 0 20px #0bd9b0)'
         },
+        '.input-bg': {
+          background: 'radial-gradient(#52525bfa, #3f3f46a0)'
+        },
         '.bg-vehicle-card': {
           background: 'radial-gradient(#6b7280fa, #4b556350)'
         },

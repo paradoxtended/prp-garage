@@ -15,9 +15,9 @@ debugData<OpenData>([
     action: 'openGarage',
     data: {
       vehicles: [
-        { type: 'personal', plate: '8GS744TD', status: 'stored', model: 2139203625, data: { engine: 100, body: 72, fuelLevel: 32 } },
-        { type: 'shared', plate: '7421SADG', status: 'outside', model: 'kuruma', data: { engine: 38, body: 12, fuelLevel: 96 } },
-        { type: 'personal', plate: '84ASD310', status: 'stored', model: 'urus', data: { engine: 79, body: 52, fuelLevel: 64 } }
+        { type: 'personal', plate: '8GS744TD', status: 'stored', model: 2139203625, data: { engine: 100, body: 72, fuelLevel: 32 }, owner: true },
+        { type: 'shared', plate: '7421SADG', status: 'outside', model: 'kuruma', data: { engine: 38, body: 12, fuelLevel: 96 }, owner: false },
+        { type: 'personal', plate: '84ASD310', status: 'impound', model: 'urus', data: { engine: 79, body: 52, fuelLevel: 64 }, owner: true }
       ]
     }
   }

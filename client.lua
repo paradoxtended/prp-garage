@@ -1,18 +1,30 @@
 local blips = require 'modules.blips.client'
 local garage = require 'modules.garage.client'
+local impound = require 'modules.impound.client'
+local transfer = require 'modules.transfer.client'
 
-local currentGarage
+local current = {}
 
 lib.callback.register('prp-garage:getGarage', function()
-    return currentGarage
+    return current
 end)
+
+RegisterNetEvent('prp-garage:notify', prp.notify)
 
 ---------------------------------------------------------------------------------------------------------------------------------
 --- BLIPS
 ---------------------------------------------------------------------------------------------------------------------------------
 
 for _, data in ipairs(Config.garages) do
-    blips.createBlip(data.coords, Config.blips.garage)
+    if data.visible then
+        blips.createBlip(data.coords, Config.blips.garage)
+    end
+end
+
+for _, data in ipairs(Config.impounds) do
+    if data.visible then
+        blips.createBlip(data.coords, Config.blips.impound)
+    end
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------
@@ -22,10 +34,7 @@ end
 local interactKey = lib.addKeybind({
     name = 'prp-garage:openGarage',
     description = 'Open garage',
-    defaultKey = 'E',
-    onReleased = function()
-        garage.open()
-    end
+    defaultKey = 'E'
 })
 
 local saveKey = lib.addKeybind({
@@ -53,19 +62,50 @@ for index, data in ipairs(Config.garages) do
                 textUi
             })
 
-            currentGarage = index
+            current.garage = true
+            current.index = index
+
+            interactKey.onReleased = function ()
+                garage.open()
+            end
+
             interactKey:disable(false)
             saveKey:disable(false)
         end,
         onExit = function()
             prp.hideTextUI()
-            currentGarage = nil
+            current = {}
             interactKey:disable(true)
             saveKey:disable(true)
         end
     })
 end
 
+for index, data in ipairs(Config.impounds) do
+    lib.points.new({
+        coords = data.coords,
+        distance = 5,
+        onEnter = function()
+            prp.showTextUI({
+                { key = interactKey.currentKey, text = locale('impound') }
+            })
+
+            current.impound = true
+            current.index = index
+
+            interactKey.onReleased = function()
+                impound.open()
+            end
+
+            interactKey:disable(false)
+        end,
+        onExit = function()
+            prp.hideTextUI()
+            current = {}
+            interactKey:disable(true)
+        end
+    })
+end
 
 
 

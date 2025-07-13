@@ -1,6 +1,12 @@
 local blips = require 'modules.blips.client'
 local garage = require 'modules.garage.client'
 
+local currentGarage
+
+lib.callback.register('prp-garage:getGarage', function()
+    return currentGarage
+end)
+
 ---------------------------------------------------------------------------------------------------------------------------------
 --- BLIPS
 ---------------------------------------------------------------------------------------------------------------------------------
@@ -22,21 +28,40 @@ local interactKey = lib.addKeybind({
     end
 })
 
-interactKey:disable(true)
+local saveKey = lib.addKeybind({
+    name = 'prp-garage:saveVehicle',
+    description = 'Save vehicle',
+    defaultKey = 'G',
+    onReleased = function()
+        if not cache.vehicle then return end
+        garage.saveVehicle()
+    end
+})
 
-for _, data in ipairs(Config.garages) do
+interactKey:disable(true)
+saveKey:disable(true)
+
+for index, data in ipairs(Config.garages) do
     lib.points.new({
         coords = data.coords,
         distance = 5,
         onEnter = function()
+            local textUi = cache.vehicle and { key = saveKey.currentKey, text = locale('save_vehicle') } or nil
+
             prp.showTextUI({
-                { key = interactKey.currentKey, text = locale('parking') }
+                { key = interactKey.currentKey, text = locale('parking') },
+                textUi
             })
+
+            currentGarage = index
             interactKey:disable(false)
+            saveKey:disable(false)
         end,
         onExit = function()
             prp.hideTextUI()
+            currentGarage = nil
             interactKey:disable(true)
+            saveKey:disable(true)
         end
     })
 end

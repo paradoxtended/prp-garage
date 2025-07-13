@@ -5,7 +5,6 @@ export interface Vehicle {
     plate: string;
     status: 'stored' | 'impound' | 'outside';
     model: string | number;
-    vehType?: string;
     data: {
         fuelLevel: number;
         engine: number;

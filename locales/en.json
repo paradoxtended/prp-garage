@@ -1,3 +1,5 @@
 {
-    "parking": "PARKING"
+    "parking": "PARKING",
+    "save_vehicle": "PARK VEHICLE",
+    "vehicle_marked": "Vehicle is not in garage. It has been marked on your GPS."
 }

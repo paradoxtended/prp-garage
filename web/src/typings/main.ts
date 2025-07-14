@@ -4,4 +4,4 @@ export interface OpenData {
     vehicles: Vehicle[];
 }
 
-export type ActiveCategory = 'all' | 'personal' | 'shared'
+export type ActiveCategory = 'personal' | 'shared'

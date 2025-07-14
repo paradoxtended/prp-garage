@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
-import Header from "./components/Header";
 import { debugData } from "./utils/debugData";
 import useNuiEvent from "./hooks/useNuiEvent";
 import type { CleanVehicle, Vehicle } from "./typings/vehicle";
 import type { ActiveCategory, OpenData } from "./typings/main";
-import Categories from "./components/Categories";
-import VehicleCard from "./components/VehicleCard";
-import { Vehicles } from "./components/utils";
-import VehicleDetails from "./components/VehicleDetails";
+import { checkImageExists, Vehicles } from "./components/utils";
 import { fetchNui } from "./utils/fetchNui";
+import Header from "./components/Header";
+import VehicleCard from "./components/VehicleCard";
+import VehicleDetails from "./components/VehicleDetails";
 
 debugData<OpenData>([
   {
@@ -26,45 +25,51 @@ debugData<OpenData>([
 const App: React.FC = () => {
   const [visible, setVisible] = useState<boolean>(false);
   const [vehicles, setVehicles] = useState<CleanVehicle[]>([]);
-  const [activeCategory, setActiveCategory] = useState<ActiveCategory>('all');
+  const [activeCategory, setActiveCategory] = useState<ActiveCategory>('personal');
   const [filtered, setFiltered] = useState<CleanVehicle[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedVehicle, setSelectedVehicle] = useState<CleanVehicle | null>(null);
 
-  useNuiEvent('openGarage', (data: OpenData) => {
-    let vehicles: Vehicle[] = data.vehicles.map((veh: Vehicle) => {
-      let model = veh.model;
+  useNuiEvent('openGarage', async (data: OpenData) => {
+    const vehicles: Vehicle[] = await Promise.all(
+      data.vehicles.map(async (veh: Vehicle) => {
+        let model = veh.model;
+        let image;
 
-      if (typeof model === 'number') {
-        model = Vehicles.find((raw: any) => raw.Hash === model)?.Name || 'unknown';
-      }
+        if (typeof model === 'number') {
+          model = Vehicles.find((raw: any) => raw.Hash === model)?.Name || 'unknown';
+        }
 
-      let displayName = Vehicles.find((raw: any) => raw.Hash === model || raw.Name === model)?.DisplayName.English;
+        const imgUrl = `https://docs.fivem.net/vehicles/${model}.webp`;
+        const exists = await checkImageExists(imgUrl);
+        image = exists ? imgUrl : '/car-icon.png';
 
-      return {
-        ...veh,
-        model: model,
-        displayName: displayName
-      };
-    });
+        const displayName = Vehicles.find(
+          (raw: any) => raw.Hash === model || raw.Name === model
+        )?.DisplayName.English;
+
+        return {
+          ...veh,
+          model,
+          image,
+          displayName
+        };
+      })
+    );
 
     setVehicles(vehicles as CleanVehicle[]);
     setVisible(true);
   });
 
   function handleClose() {
-    const container = document.querySelector('.slideIn') as HTMLElement;
+    const container = document.querySelector('.main-background') as HTMLElement;
     container!.style.animation = 'slideOut 250ms forwards';
     setTimeout(() => setVisible(false), 250);
     fetchNui('closeGarage');
   };
 
   useEffect(() => {
-    let filteredByCategory = vehicles;
-
-    if (activeCategory !== 'all') {
-      filteredByCategory = vehicles.filter(veh => veh.type === activeCategory);
-    }
+    let filteredByCategory = vehicles.filter(veh => veh.type === activeCategory);
 
     const filteredBySearch = filteredByCategory.filter(veh =>
       veh.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -90,30 +95,37 @@ const App: React.FC = () => {
 
   function showVehicleDetails(vehicle: CleanVehicle) {
     if (selectedVehicle) {
-      const wrapper = document.querySelector('.slideIn-left') as HTMLElement;
+      const wrapper = document.querySelector('.leftSide') as HTMLElement;
       wrapper!.style.animation = 'slideOutLeft 250ms forwards';
 
-      setTimeout(() => {
-        setSelectedVehicle(selectedVehicle.plate === vehicle.plate ? null : vehicle);
-      }, 250);
+      setTimeout(() => setSelectedVehicle(null), 250);
 
-      return;
+      if (selectedVehicle.plate === vehicle.plate) return;
+
+      setTimeout(() => setSelectedVehicle(vehicle), 275);
+    } else {
+      setSelectedVehicle(vehicle);
     }
-
-    setSelectedVehicle(vehicle);
   }
 
   return ( visible &&
-    <div className="absolute top-1/2 left-[84%] -translate-x-1/2 -translate-y-1/2 w-[550px] box-bg rounded-3xl p-7 slideIn">
-      <Header vehicles={vehicles} />
-      <Categories activeCategory={activeCategory} setActiveCategory={(cat: ActiveCategory) => setActiveCategory(cat)} setSearchQuery={setSearchQuery} />
-      <div className="border h-[500px] mt-3 border-gray-600 mx-3 grid grid-cols-2 gap-5 py-3 px-6 overflow-auto">
-          {filtered.map((vehicle, index) => (
-            <VehicleCard key={`vehicle-card-${index}`} vehicle={vehicle} setSelectedVehicle={(vehicle: CleanVehicle) => showVehicleDetails(vehicle)}/>
-          ))}
+    <>
+      <div className="absolute top-1/2 left-[17%] w-[550px] -translate-x-1/2 -translate-y-1/2">
+        {selectedVehicle && (
+          <VehicleDetails key={selectedVehicle.plate} vehicle={selectedVehicle} close={() => showVehicleDetails(selectedVehicle)} handleClose={() => handleClose()} /> 
+        )}
       </div>
-      {selectedVehicle && <VehicleDetails key={selectedVehicle.plate} vehicle={selectedVehicle} close={() => showVehicleDetails(selectedVehicle)} handleClose={() => handleClose()} />}
-    </div>
+      <div className="absolute top-1/2 left-[83%] w-[550px] -translate-x-1/2 -translate-y-1/2">
+        <div className="main-background p-5 h-[700px]">
+          <Header setQuery={setSearchQuery} />
+          <div className="grid grid-cols-2 mt-5 gap-3">
+            {filtered.map((veh, index) => (
+              <VehicleCard key={`vehicle-card-${index}`} vehicle={veh} setSelectedVehicle={(vehicle: CleanVehicle) => showVehicleDetails(vehicle)} />
+            ))}        
+          </div>
+        </div>
+      </div>
+    </>
   )
 };
 

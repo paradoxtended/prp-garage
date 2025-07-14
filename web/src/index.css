@@ -28,47 +28,30 @@ body {
 
 @keyframes slideIn {
   0% {
-    transform: translate(100%, -50%);
+    transform: translate(100%, -50%) perspective(1000px) rotateY(-10deg);
     opacity: 0;
   }
 }
 
 @keyframes slideOut {
   100% {
-    transform: translate(100%, -50%);
+    transform: translate(100%, -50%) perspective(1000px) rotateY(-10deg);
     opacity: 0;
   }
 }
 
 @keyframes slideInLeft {
   0% {
-    transform: translateX(-100%);
+    transform: translate(-100%, -50%) perspective(1000px) rotateY(10deg);
     opacity: 0;
   }
 }
 
 @keyframes slideOutLeft {
   100% {
-    transform: translateX(-100%);
+    transform: translate(-100%, -50%) perspective(1000px) rotateY(10deg);
     opacity: 0;
   }
-}
-
-.slideIn {
-  animation: slideIn 250ms forwards;
-}
-
-.slideIn-left {
-  animation: slideInLeft 250ms forwards;
-}
-
-input {
-  background: radial-gradient(#52525bfa, #3f3f46a0);
-  outline: none;
-  padding: 5px 10px;
-  color: white;
-  font-size: 13px;
-  border-radius: 4px;
 }
 
 input[type='number']::-webkit-inner-spin-button,
@@ -83,9 +66,42 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #c5c5c5;
+  background-color: #84cc16;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: #646464;
+  background-color: #000000a0;
+}
+
+.main-background {
+  font-family: 'Oswald', sans-serif;
+  width: 550px;
+  background: linear-gradient(#000000f9, #1a2e05f9);
+  border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) perspective(1000px) rotateY(-10deg);
+  animation: slideIn 250ms forwards;
+  color: #ffffff;
+  user-select: none;
+  overflow: hidden;
+}
+
+.leftSide {
+  transform: translate(-50%, -50%) perspective(1000px) rotateY(10deg);
+  animation: slideInLeft 250ms forwards;
+}
+
+.main-background::before {
+  content: "";
+  position: absolute;
+  left: -200px;
+  bottom: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0,255,0,0.2) 0%, transparent 90%);
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
 }

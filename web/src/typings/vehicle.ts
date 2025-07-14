@@ -1,4 +1,4 @@
-export type CleanVehicle = Omit<Vehicle, 'model'> & { model: string };
+export type CleanVehicle = Omit<Vehicle, 'model' | 'image'> & { model: string, image: string };
 
 export interface Vehicle {
     type: 'personal' | 'shared';
@@ -6,6 +6,7 @@ export interface Vehicle {
     status: 'stored' | 'impound' | 'outside';
     model: string | number;
     owner?: boolean;
+    image?: string;
     displayName?: string;
     data: {
         fuelLevel: number;

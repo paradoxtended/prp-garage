@@ -1,82 +1,87 @@
 import { useRef, useState } from "react";
 import type { CleanVehicle } from "../typings/vehicle";
-import { fetchNui } from "../utils/fetchNui";
+
+type AccordionType = 'properties' | 'actions';
 
 const VehicleDetails: React.FC<{
     vehicle: CleanVehicle;
     close: () => void;
     handleClose: () => void;
 }> = ({ vehicle, close, handleClose }) => {
-    const [accordionOpen, setAccordionOpen] = useState(false);
-    const [playerId, setPlayerId] = useState<number>();
-    
-    function takeOutVehicle() {
-        fetchNui('takeOutVehicle', vehicle)
-        close();
-        handleClose();
+    const [accordion, setAccordion] = useState<AccordionType[]>([]);
+
+    function handleAccordion(type: AccordionType) {
+        if (accordion.includes(type)) {
+            setAccordion((prev) => prev.filter((t) => t !== type));
+        } else {
+            setAccordion((prev) => [...prev, type]);
+        }
     }
 
-    function transferVehicle(type: 'society' | 'player') {
-        fetchNui('transferVehicle', {
-            type: type,
-            vehicle: vehicle,
-            playerId: type === 'player' ? playerId : undefined
-        })
-        close();
-        handleClose();
-    };
-
     return (
-        <div className="absolute top-0 right-[103%] w-[325px] p-7 box-bg rounded-3xl h-full slideIn-left">
-            <div className="flex items-center justify-between">
+        <div className="main-background p-5 pr-0 leftSide">
+            <div className="flex items-center justify-between pr-5">
                 <div>
-                    <p className="glowing-text font-semibold font-[Oswald] text-2xl">DETAILS</p>
-                    <p className="text-gray-400 text-[13px]">{vehicle.plate}</p>
+                    <p className="text-2xl">{(vehicle.displayName || vehicle.model).toUpperCase()}</p>
+                    <p className="text-zinc-400">Vehicle details</p>
                 </div>
-                <button className="text-gray-400 text-[13px] bg-gray-700 px-3 py-1
-                hover:text-[#0bd9b0] hover:bg-[#0bd9b025] duration-150" onClick={close}>Close</button>
+                <i className="fa-regular fa-circle-xmark cursor-pointer hover:opacity-50 duration-200" onClick={close}></i>
             </div>
-            <div className="mt-2 border border-gray-600 h-[550px] p-2 flex flex-col gap-2">
-                <button className="text-sm bg-[#0bd9b025] text-[#0bd9b0] py-1.5 w-full
-                hover:bg-[#0bd9b040] duration-150" onClick={() => takeOutVehicle()}>Take Out Vehicle</button>
-                {vehicle.owner && (
-                    <button className="text-sm bg-[#0bd9b025] text-[#0bd9b0] py-1.5 w-full
-                    hover:bg-[#0bd9b040] duration-150" onClick={() => transferVehicle('society')}>{vehicle.type === 'shared' ? 'Withdraw From Society' : 'Transfer To Society'}</button>
-                )}
-                <div className="details-card-bg px-3 py-1.5 rounded">
-                    <p className="text-sm glowing-text font-medium lea">Vehicle Status</p>
-                    <p className="text-xs text-gray-400">
-                        {vehicle.status.charAt(0).toUpperCase() + vehicle.status.slice(1)} | 
-                        Engine: {vehicle.data.engine}% | 
-                        Body: {vehicle.data.body}%
-                    </p>
-                </div>
-                {vehicle.status !== 'impound' && vehicle.owner && (
-                    <div className="details-card-bg px-3 py-1.5 rounded">
-                        <div className="flex items-center justify-between cursor-pointer" onClick={() => setAccordionOpen(!accordionOpen)}>
+            <div className="mt-5 flex flex-col gap-3 max-h-[800px] overflow-auto pr-2.5 mr-2.5">
+                <div className="bg-black/65 rounded">
+                    <div className="flex items-center px-5 py-3 justify-between cursor-pointer"
+                    onClick={() => handleAccordion('properties')}>
+                        <p className="text-2xl">Properties</p>
+                        <i className={`fa-solid fa-chevron-down ${accordion.includes('properties') && '-rotate-180'} transition-all`}></i>
+                    </div>
+                    <AccordionSection open={accordion.includes('properties')}>
+                        <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <p className="text-sm glowing-text font-medium lea">Transfer To Player</p>
-                                <p className="text-xs text-gray-400">Transfer vehicle to player</p>
+                                <p className="text-xl">Vehicle Type:</p>
+                                <p className="font-medium text-lime-500">{vehicle.type.charAt(0).toUpperCase() + vehicle.type.slice(1)}</p>
                             </div>
-                            <div className="glowing-text bg-[#0bd9b025] w-5 h-5 flex items-center justify-center">
-                                <i className={`fa-solid fa-chevron-down ${accordionOpen && '-rotate-180'} scale-75 transition-all`}></i>
+                            <div>
+                                <p className="text-xl">Vehicle Plate:</p>
+                                <p className="font-medium text-lime-500">{vehicle.plate}</p>
+                            </div>
+                            <div>
+                                <p className="text-xl">Vehicle Status:</p>
+                                <p className={`font-medium ${vehicle.status === 'stored' ? 'text-lime-500' : 'text-red-500'}`}>{vehicle.status.charAt(0).toUpperCase() + vehicle.status.slice(1)}</p>
+                            </div>
+                            <div>
+                                <p className="text-xl">Vehicle Model:</p>
+                                <p className="font-medium text-lime-500">{vehicle.model}</p>
+                            </div>
+                            <div>
+                                <p className="text-xl">Vehicle Body Health:</p>
+                                <p className="font-medium text-lime-500">{vehicle.data.body.toFixed(1)}%</p>
+                            </div>
+                            <div>
+                                <p className="text-xl">Vehicle Engine Health:</p>
+                                <p className="font-medium text-lime-500">{vehicle.data.engine.toFixed(1)}%</p>
+                            </div>
+                            <div className="col-span-2">
+                                <div className="flex items-center justify-between">
+                                    <p className="text-xl">Vehicle Fuel:</p>
+                                    <p className="font-medium text-lime-500">{vehicle.data.fuelLevel.toFixed(1)}%</p>
+                                </div>
+                                <div className="bg-black/50 h-2 mt-2 rounded-full border border-zinc-700/50 overflow-hidden">
+                                    <div className="h-full bg-lime-500" style={{ width: `${vehicle.data.fuelLevel}%` }}></div>
+                                </div>
                             </div>
                         </div>
-                        <AccordionSection open={accordionOpen}>
-                            <input
-                                type="number"
-                                className="input-bg placeholder:text-zinc-400"
-                                placeholder="Target ID"
-                                onChange={(e) => setPlayerId(Number(e.target.value))}
-                            />
-                            <button className="text-[13px] bg-[#0bd9b025] text-[#0bd9b0] py-1.5 w-full
-                            hover:bg-[#0bd9b040] duration-150" onClick={() => {
-                                if (!playerId) return;
-                                transferVehicle('player')
-                            }}>Transfer To Player</button>
-                        </AccordionSection>
+                    </AccordionSection>
+                </div>
+                <div className="bg-black/65 rounded">
+                    <div className="flex items-center px-5 py-3 justify-between cursor-pointer"
+                    onClick={() => handleAccordion('actions')}>
+                        <p className="text-2xl">Actions</p>
+                        <i className={`fa-solid fa-chevron-down ${accordion.includes('actions') && '-rotate-180'} transition-all`}></i>
                     </div>
-                )}
+                    <AccordionSection open={accordion.includes('actions')}>
+                        <p>TOMORROW</p>
+                    </AccordionSection>
+                </div>
             </div>
         </div>
     )
@@ -94,7 +99,7 @@ const AccordionSection: React.FC<{ open: boolean, children: any }> = ({ open, ch
         opacity: open ? 1 : 0,
       }}
     >
-        <div className="flex flex-col gap-3 mt-3">
+        <div className="px-5 py-3">
             {children}
         </div>
     </div>

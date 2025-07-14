@@ -1,52 +1,21 @@
-import { useEffect, useState } from "react";
 import type { CleanVehicle } from "../typings/vehicle";
-import { Vehicles } from "./utils";
-
-const fallbackImage = './car-icon.webp';
 
 const VehicleCard: React.FC<{
     vehicle: CleanVehicle;
     setSelectedVehicle: (data: CleanVehicle) => void;
 }> = ({ vehicle, setSelectedVehicle }) => {
-    const [imageSrc, setImageSrc] = useState<string | undefined>();
-
-    useEffect(() => {
-        setImageSrc(`https://docs.fivem.net/vehicles/${vehicle.model}.webp`);
-    }, [vehicle])
-
-    function handleImageError() {
-        setImageSrc(fallbackImage);
-    };
-
     return (
-        <div className="w-full h-60 bg-vehicle-card border-b border-gray-400 relative cursor-pointer
-        hover:border-[#0bd9b0] hover:bg-vehicle-card-hover"
+        <div className="relative rounded-[7px] bg-[linear-gradient(135deg,_#a8a8a800_5%,_#a8a8a830)] cursor-pointer flex justify-center items-center flex-col gap-3 py-5
+            before:content-[''] before:pointer-events-none before:absolute before:top-[-1px] before:left-[-1px] before:right-[-1px] before:bottom-[-1px]
+            before:rounded-[7px] before:border before:border-[#636363] w-full h-full
+            before:[mask-image:linear-gradient(to_left,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_100%)]
+            before:[-webkit-mask-image:linear-gradient(to_left,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_100%)]
+        "
         onClick={() => setSelectedVehicle(vehicle)}>
-            <div className="absolute top-1 left-1 w-0 h-0 drop-shadow-[0_0_8px_#0bd9b0]
-                    border-l-[8px] border-l-[#0bd9b0] 
-                    border-b-[8px] border-b-transparent">
-            </div>
-            <div className="relative">
-                <img src="./license-plate.png"
-                className="absolute top-0 right-0 w-[108px] h-14"/>
-                <p className="absolute top-[18px] right-3 text-slate-800 font-semibold">{vehicle.plate}</p>
-            </div>
-            <img 
-                src={imageSrc}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-                max-w-[175px] max-h-[175px]"
-                onError={handleImageError}
-            />
-            <div className="w-full h-[50px] bg-gray-800/50 absolute bottom-0 px-5 flex items-center justify-between">
-                <div className="flex flex-col leading-4">
-                    <p className="text-white font-medium text-sm leading-[14px]">{Vehicles.find((veh: any) => veh.Name === vehicle.model || veh.Hash === vehicle.model)?.DisplayName.English || vehicle.model.charAt(0).toUpperCase() + vehicle.model.slice(1)}</p>
-                    <p className="text-[13px] glowing-text">{vehicle.status.charAt(0).toUpperCase() + vehicle.status.slice(1)}</p>
-                </div>
-                <div className="flex items-center text-[13px] text-white h-5">
-                    <p className="w-5 h-full bg-yellow-500 flex items-center justify-center">F</p>
-                    <p className="bg-gray-900/50 h-full px-2">{vehicle.data.fuelLevel.toFixed(1)}</p>
-                </div>
-            </div>
+            <img src={vehicle.image} 
+            className="h-[125px]"/>
+            <p className="text-xl">{(vehicle.displayName || vehicle.model.charAt(0).toUpperCase() + vehicle.model.slice(1)).toUpperCase()}</p>
+            <p className="absolute top-2 left-2 bg-black/50 px-2 py-0.5 rounded border border-neutral-700/50">{vehicle.plate}</p>
         </div>
     )
 };

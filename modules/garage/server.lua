@@ -80,11 +80,19 @@ lib.callback.register('prp-garage:takeOutVehicle', function(source, plate, type)
         return
     end
 
+    local garage = Config.garages[data.index]
+    local checkCoords = vec3(garage.coords.x, garage.coords.y, garage.coords.z)
+
+    if #(GetEntityCoords(GetPlayerPed(source)) - checkCoords) > 5.0 then return end
+
+    local contested = lib.getClosestVehicle(checkCoords, 3.0)
+
+    if contested then return end
+
     db.updateVehicle(plate, 0, true)
 
-    local coords = Config.garages[data.index].spawnCoords
     local props = json.decode(vehicle.mods or vehicle.vehicle)
-    local entity = createVehicle(props.model, coords, type)
+    local entity = createVehicle(props.model, garage.spawnCoords, type)
 
     if entity == 0 then return end
 

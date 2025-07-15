@@ -1,7 +1,8 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CleanVehicle } from "../typings/vehicle";
+import { fetchNui } from "../utils/fetchNui";
 
-type AccordionType = 'properties' | 'actions';
+type AccordionType = 'properties' | 'transfer' | 'transfer_to_player';
 
 const VehicleDetails: React.FC<{
     vehicle: CleanVehicle;
@@ -9,6 +10,7 @@ const VehicleDetails: React.FC<{
     handleClose: () => void;
 }> = ({ vehicle, close, handleClose }) => {
     const [accordion, setAccordion] = useState<AccordionType[]>([]);
+    const [playerId, setPlayerId] = useState<number | null>(null);
 
     function handleAccordion(type: AccordionType) {
         if (accordion.includes(type)) {
@@ -16,6 +18,24 @@ const VehicleDetails: React.FC<{
         } else {
             setAccordion((prev) => [...prev, type]);
         }
+    }
+
+    function takeOutVehicle(vehicle: CleanVehicle) {
+        fetchNui('takeOutVehicle', vehicle)
+
+        close();
+        handleClose();
+    }
+
+    function transferVehicle(type: 'player' | 'society') {
+        fetchNui('transferVehicle', {
+            type: type,
+            vehicle: vehicle,
+            playerId: type === 'player' ? playerId : undefined
+        })
+
+        close();
+        handleClose();
     }
 
     return (
@@ -72,36 +92,86 @@ const VehicleDetails: React.FC<{
                         </div>
                     </AccordionSection>
                 </div>
-                <div className="bg-black/65 rounded">
+                <div className={`bg-black/65 rounded ${!vehicle.owner && 'opacity-50 pointer-events-none'}`}>
                     <div className="flex items-center px-5 py-3 justify-between cursor-pointer"
-                    onClick={() => handleAccordion('actions')}>
-                        <p className="text-2xl">Actions</p>
-                        <i className={`fa-solid fa-chevron-down ${accordion.includes('actions') && '-rotate-180'} transition-all`}></i>
+                    onClick={() => handleAccordion('transfer')}>
+                        <p className="text-2xl">Transfer</p>
+                        <i className={`fa-solid fa-chevron-down ${accordion.includes('transfer') && '-rotate-180'} transition-all`}></i>
                     </div>
-                    <AccordionSection open={accordion.includes('actions')}>
-                        <p>TOMORROW</p>
+                    <AccordionSection open={accordion.includes('transfer')}>
+                        <div className="flex flex-col gap-3">
+                            <div className="rounded bg-black/65">
+                                <div className="flex items-center px-5 py-3 justify-between cursor-pointer"
+                                onClick={() => handleAccordion('transfer_to_player')}>
+                                    <p className="text-xl">Transfer To Player</p>
+                                    <i className={`fa-solid fa-chevron-down ${accordion.includes('transfer_to_player') && '-rotate-180'} transition-all`}></i>
+                                </div>
+                                <AccordionSection open={accordion.includes('transfer_to_player')}>
+                                    <div className="flex flex-col gap-5 w-fit">
+                                        <input type="number" className="bg-lime-950/50 rounded px-2 py-1 focus:outline-none border border-lime-500
+                                        placeholder:text-gray-300" placeholder="Player ID"
+                                        onChange={(e) => setPlayerId(Number(e.target.value))}/>
+                                        <button className="bg-lime-400/10 rounded-full border border-lime-500 py-1 hover:bg-lime-400/20 duration-200"
+                                        onClick={() => transferVehicle('player')}>Transfer To Player</button>
+                                    </div>
+                                </AccordionSection>
+                            </div>
+                            <button className="bg-black/65 rounded-full text-lg py-1.5 border border-transparent hover:border-lime-500 duration-200 w-full
+                            hover:bg-black/50" onClick={() => transferVehicle('society')}>{vehicle.type === 'shared' ? 'Widthraw From Society' : 'Transfer To Society'}</button>
+                        </div>
                     </AccordionSection>
                 </div>
+                <button className="bg-black/65 rounded-full text-lg py-1.5 border border-transparent hover:border-lime-500 duration-200
+                hover:bg-black/50" onClick={() => takeOutVehicle(vehicle)}>{vehicle.status === 'outside' ? 'Set Waypoint' : 'Take Out Vehicle'}</button>
             </div>
         </div>
     )
 };
 
-const AccordionSection: React.FC<{ open: boolean, children: any }> = ({ open, children }) => {
+const AccordionSection: React.FC<{ open: boolean; children: any}> = ({ open, children }) => {
   const contentRef = useRef<HTMLDivElement>(null);
+  const [maxHeight, setMaxHeight] = useState("0px");
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+
+    if (open) {
+      setMaxHeight(`${el.scrollHeight}px`);
+    } else {
+      setMaxHeight("0px");
+    }
+  }, [children]);
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (open) {
+        setMaxHeight(`${el.scrollHeight}px`);
+      }
+    });
+
+    resizeObserver.observe(el);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [open]);
 
   return (
     <div
-      ref={contentRef}
-      className={`transition-all duration-300 ease-in-out overflow-hidden`}
       style={{
-        maxHeight: open ? contentRef.current?.scrollHeight : 0,
+        maxHeight,
         opacity: open ? 1 : 0,
+        overflow: "hidden",
+        transition: "all 0.3s",
       }}
     >
-        <div className="px-5 py-3">
-            {children}
-        </div>
+      <div ref={contentRef} className="px-5 py-3">
+        {children}
+      </div>
     </div>
   );
 };

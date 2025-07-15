@@ -58,12 +58,20 @@ const App: React.FC = () => {
     );
 
     setVehicles(vehicles as CleanVehicle[]);
+    setSelectedVehicle(null);
     setVisible(true);
   });
 
   function handleClose() {
-    const container = document.querySelector('.main-background') as HTMLElement;
+    const container = document.querySelector('.rightSide') as HTMLElement;
     container!.style.animation = 'slideOut 250ms forwards';
+
+    const tooltip = document.querySelector('.tooltip') as HTMLElement;
+    tooltip!.style.animation = 'slideOut 250ms forwards';
+
+    const leftSide = document.querySelector('.leftSide') as HTMLElement;
+    if (leftSide !== null) leftSide!.style.animation = 'slideOutLeft 250ms forwards';
+
     setTimeout(() => setVisible(false), 250);
     fetchNui('closeGarage');
   };
@@ -84,8 +92,28 @@ const App: React.FC = () => {
   useEffect(() => {
     if (!visible) return;
 
-    const keyHandler = (e: KeyboardEvent) => {
-      if (['Escape'].includes(e.code)) handleClose();
+    const keyHandler = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement;
+
+      // Ignore if typing in an input, textarea, or contenteditable element
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+      ) {
+        return
+      }
+
+      const key = event.key.toLowerCase();
+
+      switch (key) {
+        case 'escape':
+          return handleClose()
+        case 'q':
+          return setActiveCategory('personal')
+        case 'e':
+          return setActiveCategory('shared')
+      }
     };
 
     window.addEventListener('keydown', keyHandler);
@@ -110,13 +138,23 @@ const App: React.FC = () => {
 
   return ( visible &&
     <>
+      <div className="absolute top-5 right-5 flex items-center gap-3 text-white tooltip transform-none font-[Oswald]">
+        <div className={`flex items-center gap-3 bg-black/65 px-5 py-2 rounded border transition-all duration-200 ${activeCategory === 'personal' ? 'border-lime-500 bg-lime-900/75' : 'border-neutral-600'}`}>
+          <p className="bg-black/50 px-1.5 rounded-sm text-[13px]">Q</p>
+          <p>PERSONAL</p>
+        </div>
+        <div className={`flex items-center gap-3 bg-black/65 px-5 py-2 rounded border transition-all duration-200 ${activeCategory === 'shared' ? 'border-lime-500 bg-lime-900/75' : 'border-neutral-600'}`}>
+          <p className="bg-black/50 px-1.5 rounded-sm text-[13px]">E</p>
+          <p>SHARED</p>
+        </div>
+      </div>
       <div className="absolute top-1/2 left-[17%] w-[550px] -translate-x-1/2 -translate-y-1/2">
         {selectedVehicle && (
           <VehicleDetails key={selectedVehicle.plate} vehicle={selectedVehicle} close={() => showVehicleDetails(selectedVehicle)} handleClose={() => handleClose()} /> 
         )}
       </div>
       <div className="absolute top-1/2 left-[83%] w-[550px] -translate-x-1/2 -translate-y-1/2">
-        <div className="main-background p-5 h-[700px]">
+        <div className="main-background rightSide p-5 h-[700px]">
           <Header setQuery={setSearchQuery} />
           <div className="grid grid-cols-2 mt-5 gap-3">
             {filtered.map((veh, index) => (

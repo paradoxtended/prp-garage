@@ -1,3 +1,5 @@
+if not Config.allowTransfering then return end
+
 local db = require 'modules.db.server'
 
 ---@param source number

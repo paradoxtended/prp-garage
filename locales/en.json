@@ -10,5 +10,6 @@
     "vehicle_transfered": "Vehicle has been transfered successfully.",
     "player_not_offline": "Player is not online.",
     "player_far_away": "Player is far away from you.",
-    "vehicle_is_shared": "Vehicle is in society."
+    "vehicle_is_shared": "Vehicle is in society.",
+    "not_supported": "This function is not supported on this server."
 }

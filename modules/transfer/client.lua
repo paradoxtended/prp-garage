@@ -28,6 +28,13 @@ end
 RegisterNUICallback('transferVehicle', function(data, cb)
     cb(1)
 
+    if not Config.allowTransfering then
+        return prp.notify({
+            description = locale('not_supported'),
+            type = 'error'
+        })
+    end
+
     ---@type 'society' | 'player'
     local type, vehicle, playerId in data
 

@@ -1,4 +1,5 @@
 {
+    "allowTransfering": true,
     "blips": {
         "garage": {
             "sprite": 357,

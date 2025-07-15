@@ -13,7 +13,7 @@ const VehicleCard: React.FC<{
         "
         onClick={() => setSelectedVehicle(vehicle)}>
             <img src={vehicle.image} 
-            className="h-[125px]"/>
+            className="max-h-[100px]"/>
             <p className="text-xl">{(vehicle.displayName || vehicle.model.charAt(0).toUpperCase() + vehicle.model.slice(1)).toUpperCase()}</p>
             <p className="absolute top-2 left-2 bg-black/50 px-2 py-0.5 rounded border border-neutral-700/50">{vehicle.plate}</p>
         </div>

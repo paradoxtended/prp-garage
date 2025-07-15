@@ -75,8 +75,8 @@ input[type='number']::-webkit-outer-spin-button {
 
 .main-background {
   font-family: 'Oswald', sans-serif;
-  width: 550px;
-  background: linear-gradient(#000000f9, #1a2e05f9);
+  width: 500px;
+  background: linear-gradient(#000000f0, #1a2e05f0);
   border-radius: 10px;
   position: absolute;
   top: 50%;

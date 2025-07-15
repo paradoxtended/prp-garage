@@ -148,13 +148,13 @@ const App: React.FC = () => {
           <p>SHARED</p>
         </div>
       </div>
-      <div className="absolute top-1/2 left-[17%] w-[550px] -translate-x-1/2 -translate-y-1/2">
+      <div className="absolute top-1/2 left-[15%] w-[550px] -translate-x-1/2 -translate-y-1/2">
         {selectedVehicle && (
           <VehicleDetails key={selectedVehicle.plate} vehicle={selectedVehicle} close={() => showVehicleDetails(selectedVehicle)} handleClose={() => handleClose()} /> 
         )}
       </div>
-      <div className="absolute top-1/2 left-[83%] w-[550px] -translate-x-1/2 -translate-y-1/2">
-        <div className="main-background rightSide p-5 h-[700px]">
+      <div className="absolute top-1/2 left-[85%] w-[550px] -translate-x-1/2 -translate-y-1/2">
+        <div className="main-background rightSide p-5 h-[500px]">
           <Header setQuery={setSearchQuery} />
           <div className="grid grid-cols-2 mt-5 gap-3">
             {filtered.map((veh, index) => (

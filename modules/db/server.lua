@@ -1,12 +1,14 @@
 local Queries = {
-    SELECT_OWNED_VEHICLES = 'SELECT * FROM %s WHERE (owner = ? or job = ?) and type = ?',
-    SELECT_VEHICLE = 'SELECT * FROM %s WHERE (owner = ? or job = ?) and plate = ?',
+    SELECT_OWNED_VEHICLES = "SELECT * FROM %s WHERE (owner = ? or job = ? or JSON_CONTAINS(shared, JSON_OBJECT('id', ?))) and type = ?",
+    SELECT_VEHICLE = "SELECT * FROM %s WHERE (owner = ? or job = ? or JSON_CONTAINS(shared, JSON_OBJECT('id', ?))) and plate = ?",
     UPDATE_STORED = 'UPDATE %s SET stored = ? WHERE plate = ?',
     SELECT_IMPOUNDED_VEHICLES = 'SELECT * FROM %s WHERE (owner = ? or job = ?) and stored = ? and type = ?',
     SELECT_VEHICLE_STRICT = 'SELECT * FROM %s WHERE owner = ? and plate = ?',
     TRANSFER_TO_PLAYER = 'UPDATE %s SET owner = ? WHERE plate = ?',
     TRANSFER_TO_SOCIETY = 'UPDATE %s SET job = ? WHERE plate = ?',
-    WITHDRAW_FROM_SOCIETY = 'UPDATE %s SET job = NULL WHERE plate = ?'
+    WITHDRAW_FROM_SOCIETY = 'UPDATE %s SET job = NULL WHERE plate = ?',
+    ADD_COLUMN = 'ALTER TABLE %s ADD COLUMN IF NOT EXISTS shared longtext',
+    SAVE_SHARED = 'UPDATE %s SET shared = ? WHERE plate = ?'
 }
 
 local table
@@ -27,10 +29,14 @@ for key, query in pairs(Queries) do
     end
 end
 
+MySQL.ready(function ()
+    MySQL.prepare.await(Queries.ADD_COLUMN)
+end)
+
 local db = {}
 
 function db.getOwnedVehicles(identifier, job, type)
-    return MySQL.query.await(Queries.SELECT_OWNED_VEHICLES, { identifier, job, type })
+    return MySQL.query.await(Queries.SELECT_OWNED_VEHICLES, { identifier, job, identifier, type })
 end
 
 function db.getImpoundedVehicles(identifier, job, type)
@@ -38,7 +44,7 @@ function db.getImpoundedVehicles(identifier, job, type)
 end
 
 function db.getVehicle(plate, owner, job)
-    return MySQL.single.await(Queries.SELECT_VEHICLE, { owner, job, plate })
+    return MySQL.single.await(Queries.SELECT_VEHICLE, { owner, job, owner, plate })
 end
 
 function db.getStrictVehicle(plate, owner)
@@ -54,6 +60,10 @@ end
 
 function db.updateVehicle(plate, data, onlyStored)
     return onlyStored and MySQL.update.await(Queries.UPDATE_STORED, { data, plate }) or MySQL.update.await(Queries.SET_VEHICLE_PROPS, { data, plate })
+end
+
+function db.updateShared(plate, shared)
+    return MySQL.update.await(Queries.SAVE_SHARED, { shared, plate })
 end
 
 return db

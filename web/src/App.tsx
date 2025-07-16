@@ -14,7 +14,13 @@ debugData<OpenData>([
     action: 'openGarage',
     data: {
       vehicles: [
-        { type: 'personal', plate: '8GS744TD', status: 'stored', model: 2139203625, data: { engine: 100, body: 72, fuelLevel: 32 }, owner: true },
+        { type: 'personal', plate: '8GS744TD', status: 'stored', model: 2139203625, data: { engine: 100, body: 72, fuelLevel: 32 }, owner: true,
+        sharable: [
+          { id: 'char1:4587746514684', name: 'Koil' },
+          { id: 'char2:4587746514684', name: 'Poleczko' },
+          { id: 'char3:4587746514684', name: 'J Swey' },
+          { id: 'char4:4587746514684', name: 'Kalwi' }
+        ] },
         { type: 'shared', plate: '7421SADG', status: 'outside', model: 3061199846, data: { engine: 38, body: 12, fuelLevel: 96 }, owner: false },
         { type: 'personal', plate: '84ASD310', status: 'impound', model: 'urus', data: { engine: 79, body: 52, fuelLevel: 64 }, owner: true }
       ]
@@ -148,12 +154,12 @@ const App: React.FC = () => {
           <p>SHARED</p>
         </div>
       </div>
-      <div className="absolute top-1/2 left-[15%] w-[550px] -translate-x-1/2 -translate-y-1/2">
+      <div className="absolute top-1/2 left-[14%] w-[550px] -translate-x-1/2 -translate-y-1/2">
         {selectedVehicle && (
           <VehicleDetails key={selectedVehicle.plate} vehicle={selectedVehicle} close={() => showVehicleDetails(selectedVehicle)} handleClose={() => handleClose()} /> 
         )}
       </div>
-      <div className="absolute top-1/2 left-[85%] w-[550px] -translate-x-1/2 -translate-y-1/2">
+      <div className="absolute top-1/2 left-[86%] w-[550px] -translate-x-1/2 -translate-y-1/2">
         <div className="main-background rightSide p-5 h-[500px]">
           <Header setQuery={setSearchQuery} />
           <div className="grid grid-cols-2 mt-5 gap-3">

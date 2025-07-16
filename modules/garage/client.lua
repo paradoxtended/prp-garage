@@ -137,9 +137,10 @@ function garage.getVehicles()
         local status = vehicle.stored == 0 and 'outside'
                     or vehicle.stored == 1 and 'stored'
                     or 'impound'
+        local sharable = json.decode(vehicle.shared)
 
         table.insert(vehicles, {
-            type = vehicle.job and 'shared' or 'personal',
+            type = (vehicle.job or sharable) and 'shared' or 'personal',
             plate = vehicle.plate,
             status = status,
             model = props.model,
@@ -148,7 +149,8 @@ function garage.getVehicles()
                 engine = props.engineHealth / 10,
                 body = props.bodyHealth / 10,
                 fuelLevel = props.fuelLevel
-            }
+            },
+            sharable = sharable
         })
     end
 

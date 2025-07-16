@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { CleanVehicle } from "../typings/vehicle";
 import { fetchNui } from "../utils/fetchNui";
 
-type AccordionType = 'properties' | 'transfer' | 'transfer_to_player';
+type AccordionType = 'properties' | 'transfer' | 'transfer_to_player' | 'share';
 
 const VehicleDetails: React.FC<{
     vehicle: CleanVehicle;
@@ -28,10 +28,34 @@ const VehicleDetails: React.FC<{
     }
 
     function transferVehicle(type: 'player' | 'society') {
+        if (type === 'player' && playerId === null || !playerId) return;
+
         fetchNui('transferVehicle', {
             type: type,
             vehicle: vehicle,
             playerId: type === 'player' ? playerId : undefined
+        })
+
+        close();
+        handleClose();
+    }
+
+    function shareVehicle() {
+        if (playerId === null || !playerId) return;
+
+        fetchNui('shareVehicle', {
+            vehicle: vehicle,
+            playerId: playerId
+        })
+
+        close();
+        handleClose();
+    }
+
+    function removeVehicleFromPlayer(index: number) {
+        fetchNui('removeSharedVehicle', {
+            vehicle: vehicle,
+            index: index
         })
 
         close();
@@ -118,6 +142,32 @@ const VehicleDetails: React.FC<{
                             </div>
                             <button className="bg-black/65 rounded-full text-lg py-1.5 border border-transparent hover:border-lime-500 duration-200 w-full
                             hover:bg-black/50" onClick={() => transferVehicle('society')}>{vehicle.type === 'shared' ? 'Widthraw From Society' : 'Transfer To Society'}</button>
+                        </div>
+                    </AccordionSection>
+                </div>
+                <div className={`bg-black/65 rounded ${!vehicle.owner && 'opacity-50 pointer-events-none'}`}>
+                    <div className="flex items-center px-5 py-3 justify-between cursor-pointer"
+                    onClick={() => handleAccordion('share')}>
+                        <p className="text-2xl">Share</p>
+                        <i className={`fa-solid fa-chevron-down ${accordion.includes('share') && '-rotate-180'} transition-all`}></i>
+                    </div>
+                    <AccordionSection open={accordion.includes('share')}>
+                        {vehicle?.sharable && (
+                            <>
+                                <p className="text-xl">Shared players</p>
+                                <div className="grid grid-cols-4 my-3">
+                                    {vehicle.sharable.map((shared, index) => (
+                                        <p key={`sharable-player-${index}`} className="hover:text-lime-500 cursor-pointer duration-200"
+                                        onClick={() => removeVehicleFromPlayer(index)}>{shared.name}</p>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                        <div className="flex items-center gap-3">
+                            <input type="number" className="rounded bg-transparent border border-lime-600 focus:outline-none px-2 py-1" placeholder="Player ID"
+                            onChange={(e) => setPlayerId(Number(e.target.value))}/>
+                            <button className="border border-lime-600 rounded-full px-5 py-1 hover:bg-lime-600/25 duration-200"
+                            onClick={() => shareVehicle()}>Share vehicle</button>
                         </div>
                     </AccordionSection>
                 </div>

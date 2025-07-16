@@ -11,5 +11,8 @@
     "player_not_offline": "Player is not online.",
     "player_far_away": "Player is far away from you.",
     "vehicle_is_shared": "Vehicle is in society.",
-    "not_supported": "This function is not supported on this server."
+    "not_supported": "This function is not supported on this server.",
+    "player_has_access": "This player already has an access to this vehicle.",
+    "player_granted_access": "You have granted access to vehicle to player.",
+    "player_took_access": "You have taken access to vehicle from player."
 }

@@ -12,5 +12,6 @@ export interface Vehicle {
         fuelLevel: number;
         engine: number;
         body: number;
-    }
+    },
+    sharable?: { id: string, name: string }[]
 }

@@ -2,6 +2,7 @@ local blips = require 'modules.blips.client'
 local garage = require 'modules.garage.client'
 local impound = require 'modules.impound.client'
 local transfer = require 'modules.transfer.client'
+local share = require 'modules.share.client'
 
 local current = {}
 

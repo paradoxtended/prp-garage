@@ -4,6 +4,8 @@ local impound = require 'modules.impound.client'
 local transfer = require 'modules.transfer.client'
 local share = require 'modules.share.client'
 
+local utils = require 'utils.client'
+
 local current = {}
 
 lib.callback.register('prp-garage:getGarage', function()
@@ -16,17 +18,33 @@ RegisterNetEvent('prp-garage:notify', prp.notify)
 --- BLIPS
 ---------------------------------------------------------------------------------------------------------------------------------
 
-for _, data in ipairs(Config.garages) do
-    if data.visible then
-        blips.createBlip(data.coords, Config.blips.garage)
-    end
-end
+---@type integer[]
+local activeBlips = {}
 
-for _, data in ipairs(Config.impounds) do
-    if data.visible then
-        blips.createBlip(data.coords, Config.blips.impound)
+CreateThread(function()
+    while true do
+        -- Remove blips if exists in activeBlips
+        for _, blip in ipairs(activeBlips) do
+            RemoveBlip(blip)
+        end
+
+        for _, data in ipairs(Config.garages) do
+            if data.visible and (not data.restricted or utils.hasJob(data.restricted)) then
+                local blip = blips.createBlip(data.coords, Config.blips.garage)
+                table.insert(activeBlips, blip)
+            end
+        end
+
+        for _, data in ipairs(Config.impounds) do
+            if data.visible then
+                local blip = blips.createBlip(data.coords, Config.blips.impound)
+                table.insert(activeBlips, blip)
+            end
+        end
+        
+        Wait(30 * 60000) -- 30 minutes
     end
-end
+end)
 
 ---------------------------------------------------------------------------------------------------------------------------------
 --- KEYBIND LISTENING
@@ -56,6 +74,8 @@ for index, data in ipairs(Config.garages) do
         coords = data.coords,
         distance = 5,
         onEnter = function()
+            if data.restricted and not utils.hasJob(data.restricted) then return end
+
             local textUi = cache.vehicle and { key = saveKey.currentKey, text = locale('save_vehicle') } or nil
 
             prp.showTextUI({

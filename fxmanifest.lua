@@ -4,7 +4,7 @@ lua54 'yes'
 name 'prp-garage'
 game 'gta5'
 author 'Paradoxtended'
-version '1.0.1'
+version '1.0.2'
 repository 'https://github.com/paradoxtended/prp-garage'
 description 'Advanced garage system for FiveM servers'
 
@@ -33,5 +33,6 @@ files {
     'web/dist/**/*',
     'locales/*.json',
     'modules/**/*.lua',
+    'utils/*.lua',
     'static/*'
 }

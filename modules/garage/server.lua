@@ -81,6 +81,9 @@ lib.callback.register('prp-garage:takeOutVehicle', function(source, plate, type)
     end
 
     local garage = Config.garages[data.index]
+
+    if garage.restricted and not player:hasOneOfJobs(garage.restricted) then return end
+
     local checkCoords = vec3(garage.coords.x, garage.coords.y, garage.coords.z)
 
     if #(GetEntityCoords(GetPlayerPed(source)) - checkCoords) > 5.0 then return end

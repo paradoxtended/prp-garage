@@ -25,7 +25,8 @@
             "visible": true,
             "type": "car",
             "coords": { "x": -1113.9034, "y": -804.6392, "z": 17.4453 },
-            "spawnCoords": { "x": -1110.6753, "y": -802.2931, "z": 17.7679, "w": 64.1694 }
+            "spawnCoords": { "x": -1110.6753, "y": -802.2931, "z": 17.7679, "w": 64.1694 },
+            "restricted": [ "police" ]
         },
         {
             "visible": true,

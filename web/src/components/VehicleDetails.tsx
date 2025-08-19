@@ -28,7 +28,7 @@ const VehicleDetails: React.FC<{
     }
 
     function transferVehicle(type: 'player' | 'society') {
-        if (type === 'player' && playerId === null || !playerId) return;
+        if (type === 'player' && (playerId === null || !playerId)) return;
 
         fetchNui('transferVehicle', {
             type: type,
